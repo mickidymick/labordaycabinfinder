@@ -8,12 +8,13 @@
     "build": "expo export --platform web",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.node.json",
     "test": "tsx --test scrapers/*.test.ts",
-    "probe:elk": "tsx scripts/probe-elk-springs.ts"
+    "probe:elk": "tsx scripts/probe-elk-springs.ts",
+    "discover": "tsx scripts/discover-source.ts",
+    "probe:generic": "tsx scripts/probe-generic.ts"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.1.1",
     "@supabase/supabase-js": "^2.101.1",
-    "cheerio": "^1.0.0",
     "expo": "~54.0.33",
     "expo-auth-session": "~7.0.10",
     "expo-constants": "~18.0.13",

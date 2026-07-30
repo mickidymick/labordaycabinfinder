@@ -52,9 +52,20 @@ Not every source can answer date questions, and the UI is explicit about which i
 |---|---|---|
 | **Elk Springs Resort** | ✅ 178 cabins, one request | ✅ per-cabin calendar bitmap |
 | **Airbnb / Vrbo** (via Apify) | — | ✅ the actor filters by date |
-| **Cabins USA** | ✅ ~264 cabins via sitemap + JSON-LD | ❌ no queryable calendar |
-| Hearthside, Timber Tops, Summit, Volunteer | ⚠️ needs URL pattern confirmed | ❌ |
+| **Cabins USA** | ✅ ~264 cabins | ❌ no queryable calendar |
+| **Timber Tops** | ✅ ~220 cabins | ❌ |
+| **Hearthside** | ✅ ~159 cabins | ❌ |
+| **Summit** | ✅ ~114 cabins | ❌ |
 | Cabins of the Smokies (Track HS), Bear Tootin (Streamline) | ❌ adapter not built | ❌ |
+| ~~Volunteer Cabin Rentals~~ | 🚫 Cloudflare bot challenge — not crawled | — |
+
+Roughly 735 cabins across the five working sources. Only Elk Springs (and the
+Apify actors, once enabled) can answer date questions; the rest are catalog-only.
+
+None of the four `generic-jsonld` sites publish occupancy in their markup, so
+`sleeps` is null for them and the group-size filter can't apply — filter on
+bedrooms instead. Bedrooms, town, coordinates, hero image, amenities and rating
+all come through.
 
 A cabin is therefore in one of **three** states, not two: free, booked, or *unknown*.
 Unknown is not a rejection — most company sites publish no calendar we can query, and
@@ -121,6 +132,27 @@ supabase-setup.sql             # full schema, RLS, seed data
 ```
 
 ## Adding a rental company
+
+Don't hand-write the URL pattern — measure it:
+
+```bash
+npm run discover -- https://www.somecabins.com
+```
+
+That reads the site's sitemap, clusters URLs by path shape, fetches a sample page from each
+cluster, and scores how much real listing data comes back. It then generates candidate
+regexes, **fetches pages from each to check they're actually cabins**, and prints a
+ready-to-paste config with a `READY` or `NEEDS REVIEW` verdict.
+
+This exists because guessing is how a source ends up silently returning nothing, which is
+indistinguishable from a site that has no cabins. Every enabled source's pattern came from
+this tool.
+
+Then dry-run the real adapter before enabling it:
+
+```bash
+npm run probe:generic -- https://www.somecabins.com '^/cabins/([a-z0-9-]+)/?$' 8
+```
 
 Most sites publish schema.org data, so adding one is usually a `companies` row rather than
 code — `generic-jsonld` discovers listing pages from the sitemap and reads JSON-LD off each:

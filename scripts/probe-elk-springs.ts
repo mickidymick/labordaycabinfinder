@@ -41,51 +41,59 @@ function check(label: string, ok: boolean, detail = '') {
   if (!ok) failures++;
 }
 
-console.log(`\nElk Springs probe — trip ${CHECK_IN} → ${CHECK_OUT} (${nightsOf(CHECK_IN, CHECK_OUT).length} nights)\n`);
+async function main() {
+  console.log(`\nElk Springs probe — trip ${CHECK_IN} → ${CHECK_OUT} (${nightsOf(CHECK_IN, CHECK_OUT).length} nights)\n`);
 
-const catalog = await elkSprings.listCatalog(ctx);
-check('catalog returns a plausible number of cabins', catalog.length > 100, `${catalog.length} cabins`);
-check('every cabin has an id, name and url',
-  catalog.every((c) => c.sourceListingId && c.name && c.url));
-check('most cabins have a hero image',
-  catalog.filter((c) => c.heroImageUrl).length > catalog.length * 0.8,
-  `${catalog.filter((c) => c.heroImageUrl).length}/${catalog.length}`);
-check('most cabins have sleeps + bedrooms',
-  catalog.filter((c) => c.sleeps && c.bedrooms).length > catalog.length * 0.8);
-check('coordinates parsed',
-  catalog.filter((c) => c.lat && c.lng).length > catalog.length * 0.8);
-check('amenities extracted for most cabins',
-  catalog.filter((c) => (c.amenities?.length ?? 0) > 0).length > catalog.length * 0.5);
+  const catalog = await elkSprings.listCatalog(ctx);
+  check('catalog returns a plausible number of cabins', catalog.length > 100, `${catalog.length} cabins`);
+  check('every cabin has an id, name and url',
+    catalog.every((c) => c.sourceListingId && c.name && c.url));
+  check('most cabins have a hero image',
+    catalog.filter((c) => c.heroImageUrl).length > catalog.length * 0.8,
+    `${catalog.filter((c) => c.heroImageUrl).length}/${catalog.length}`);
+  check('most cabins have sleeps + bedrooms',
+    catalog.filter((c) => c.sleeps && c.bedrooms).length > catalog.length * 0.8);
+  check('coordinates parsed',
+    catalog.filter((c) => c.lat && c.lng).length > catalog.length * 0.8);
+  check('amenities extracted for most cabins',
+    catalog.filter((c) => (c.amenities?.length ?? 0) > 0).length > catalog.length * 0.5);
 
-const withHotTub = catalog.filter((c) => c.amenities?.includes('hot_tub')).length;
-check('hot tub is a common amenity (sanity check on the matcher)', withHotTub > 20, `${withHotTub} cabins`);
+  const withHotTub = catalog.filter((c) => c.amenities?.includes('hot_tub')).length;
+  check('hot tub is a common amenity (sanity check on the matcher)', withHotTub > 20, `${withHotTub} cabins`);
 
-// Availability on a sample — enough to prove the path without 178 requests.
-const sample = catalog.filter((c) => (c.bedrooms ?? 0) >= 3).slice(0, 5);
-console.log(`\nChecking availability for ${sample.length} sampled 3+ bedroom cabins:\n`);
+  // Availability on a sample — enough to prove the path without 178 requests.
+  const sample = catalog.filter((c) => (c.bedrooms ?? 0) >= 3).slice(0, 5);
+  console.log(`\nChecking availability for ${sample.length} sampled 3+ bedroom cabins:\n`);
 
-let decoded = 0;
-let available = 0;
-for (const listing of sample) {
-  const days = await elkSprings.fetchAvailability!(listing, ctx);
-  if (days.length > 0) decoded++;
-  const verdict = isStayAvailable(days, CHECK_IN, CHECK_OUT);
-  if (verdict === true) available++;
-  const window = nightsOf(CHECK_IN, CHECK_OUT)
-    .map((d) => days.find((x) => x.day === d)?.state ?? '?')
-    .join('');
-  console.log(
-    `  ${listing.name.padEnd(34)} ${String(listing.bedrooms).padStart(2)}br ` +
-    `sleeps ${String(listing.sleeps).padStart(2)}  ${window}  → ${
-      verdict === null ? 'unknown' : verdict ? 'AVAILABLE' : 'booked'
-    }  (${days.length} days decoded)`,
-  );
+  let decoded = 0;
+  let available = 0;
+  for (const listing of sample) {
+    const days = await elkSprings.fetchAvailability!(listing, ctx);
+    if (days.length > 0) decoded++;
+    const verdict = isStayAvailable(days, CHECK_IN, CHECK_OUT);
+    if (verdict === true) available++;
+    const window = nightsOf(CHECK_IN, CHECK_OUT)
+      .map((d) => days.find((x) => x.day === d)?.state ?? '?')
+      .join('');
+    console.log(
+      `  ${listing.name.padEnd(34)} ${String(listing.bedrooms).padStart(2)}br ` +
+      `sleeps ${String(listing.sleeps).padStart(2)}  ${window}  → ${
+        verdict === null ? 'unknown' : verdict ? 'AVAILABLE' : 'booked'
+      }  (${days.length} days decoded)`,
+    );
+  }
+
+  check('calendars decoded for the whole sample', decoded === sample.length, `${decoded}/${sample.length}`);
+  check('trip window resolves to a definite yes/no (not unknown)',
+    sample.length > 0 && decoded === sample.length);
+
+  console.log(`\n${available}/${sample.length} sampled cabins are free for Labor Day weekend.`);
+  console.log(failures === 0 ? '\nAll checks passed.\n' : `\n${failures} check(s) failed.\n`);
+  process.exit(failures === 0 ? 0 : 1);
+
 }
 
-check('calendars decoded for the whole sample', decoded === sample.length, `${decoded}/${sample.length}`);
-check('trip window resolves to a definite yes/no (not unknown)',
-  sample.length > 0 && decoded === sample.length);
-
-console.log(`\n${available}/${sample.length} sampled cabins are free for Labor Day weekend.`);
-console.log(failures === 0 ? '\nAll checks passed.\n' : `\n${failures} check(s) failed.\n`);
-process.exit(failures === 0 ? 0 : 1);
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

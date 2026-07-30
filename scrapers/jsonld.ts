@@ -99,14 +99,25 @@ function collectImages(node: any, base: string): string[] {
 }
 
 function amenityNames(node: any): string[] {
+  const names: string[] = [];
+
   const feat = node.amenityFeature;
-  if (!feat) return [];
-  const list = Array.isArray(feat) ? feat : [feat];
-  return list
-    // LocationFeatureSpecification uses value:false to mean "does NOT have it".
-    .filter((f) => f?.value !== false)
-    .map((f) => (typeof f === 'string' ? f : f?.name))
-    .filter((n): n is string => typeof n === 'string');
+  if (feat) {
+    const list = Array.isArray(feat) ? feat : [feat];
+    names.push(
+      ...list
+        // LocationFeatureSpecification uses value:false to mean "does NOT have it".
+        .filter((f) => f?.value !== false)
+        .map((f) => (typeof f === 'string' ? f : f?.name))
+        .filter((n: unknown): n is string => typeof n === 'string'),
+    );
+  }
+
+  // Several sites express this as a top-level boolean rather than an
+  // amenityFeature entry, so it'd otherwise be silently dropped.
+  if (node.petsAllowed === true || node.petsAllowed === 'true') names.push('pet friendly');
+
+  return names;
 }
 
 function priceOf(node: any): number | null {

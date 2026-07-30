@@ -28,11 +28,25 @@ import { resolveDriveMinutes } from '../../lib/geo';
 type GenericConfig = {
   sitemap?: string;
   listingUrl?: string;
+  /** Optional regex of paths to skip even when listingUrl matches them. */
+  excludeUrl?: string;
   indexPath?: string;
   maxListings?: number;
 };
 
 const DEFAULT_MAX_LISTINGS = 400;
+
+/**
+ * A booking or confirmation page under /cabins/ still carries the company's own
+ * LodgingBusiness JSON-LD, and listingFromPage will happily turn that into a
+ * "cabin" named after the company. Requiring a room count is what separates an
+ * actual property from a marketing page — without it the grid fills up with
+ * duplicates of the rental company itself.
+ */
+function looksLikeCabin(listing: RawListing | null): listing is RawListing {
+  if (!listing?.name) return false;
+  return listing.bedrooms != null || listing.sleeps != null;
+}
 
 async function discoverSitemapUrls(ctx: AdapterContext): Promise<string[]> {
   const base = ctx.company.base_url;
@@ -77,7 +91,8 @@ export const genericJsonLd: SourceAdapter = {
     if (cfg.indexPath) {
       try {
         const indexUrl = new URL(cfg.indexPath, base).toString();
-        const found = listingsFromItemList(await ctx.fetchText(indexUrl), indexUrl);
+        const found = listingsFromItemList(await ctx.fetchText(indexUrl), indexUrl)
+          .filter(looksLikeCabin);
         if (found.length > 0) {
           ctx.log(`${ctx.company.slug}: ${found.length} listings from ItemList`);
           return found.slice(0, max).map(withDriveTime);
@@ -97,12 +112,25 @@ export const genericJsonLd: SourceAdapter = {
       );
     }
 
-    const urls = [...new Set(await discoverSitemapUrls(ctx))].filter((u) => pattern.test(u));
+    // Match against the path, not the whole URL, so a pattern can anchor with
+    // ^/ the way a path pattern naturally reads. Testing the full URL would
+    // make every anchored pattern match nothing, which looks exactly like a
+    // site that has no cabins.
+    const pathOf = (u: string) => {
+      try { return new URL(u).pathname; } catch { return u; }
+    };
+
+    const exclude = cfg.excludeUrl ? new RegExp(cfg.excludeUrl) : null;
+    const urls = [...new Set(await discoverSitemapUrls(ctx))].filter((u) => {
+      const path = pathOf(u);
+      return pattern.test(path) && !exclude?.test(path);
+    });
     ctx.log(`${ctx.company.slug}: ${urls.length} listing URLs in sitemap`);
     if (urls.length === 0) return [];
 
     const listings: RawListing[] = [];
     let failures = 0;
+    let rejected = 0;
 
     for (const url of urls.slice(0, max)) {
       if (outOfTime(ctx)) {
@@ -110,16 +138,20 @@ export const genericJsonLd: SourceAdapter = {
         break;
       }
       // Group 1 of the pattern is the stable id; fall back to the URL itself.
-      const id = pattern.exec(url)?.[1] ?? url;
+      const id = pattern.exec(pathOf(url))?.[1] ?? url;
       try {
         const listing = listingFromPage(await ctx.fetchText(url), url, id);
-        if (listing) listings.push(withDriveTime(listing));
+        if (looksLikeCabin(listing)) listings.push(withDriveTime(listing));
+        else rejected++;
       } catch {
         failures++;
       }
     }
 
-    if (failures) ctx.log(`${ctx.company.slug}: ${failures} detail pages failed`);
+    // Report both, so "the pattern is too loose" and "the site changed its
+    // markup" stay distinguishable in the search-run log.
+    if (rejected) ctx.log(`${ctx.company.slug}: ${rejected} pages had no cabin data (skipped)`);
+    if (failures) ctx.log(`${ctx.company.slug}: ${failures} detail pages failed to fetch`);
     return listings;
   },
 };

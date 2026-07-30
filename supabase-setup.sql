@@ -470,29 +470,38 @@ insert into companies (slug, name, base_url, adapter, adapter_kind, supports_ava
   ('elk-springs', 'Elk Springs Resort', 'https://www.elkspringsresort.com',
    'elk-springs', 'api', true, true, 400, '{}'::jsonb),
 
-  -- Verified: sitemap lists ~264 cabins at the pattern below, and each detail
-  -- page carries an Accommodation node with bedrooms/occupancy/amenities.
-  -- robots.txt requests Crawl-delay: 1, which crawl_delay_ms honors.
+  -- The four below were each verified with `npm run discover <url>`, which
+  -- reads the live sitemap, clusters the URLs, and fetches sample pages to
+  -- confirm the pattern actually selects cabins. The counts are what that tool
+  -- measured. excludeUrl drops booking-flow pages that share the listing path.
+  --
+  -- Volunteer Cabin Rentals is deliberately absent: it sits behind a Cloudflare
+  -- bot challenge (403 "Just a moment...") and we honor that rather than
+  -- working around it.
+
+  -- ~264 cabins; anchored on the trailing id, which is stabler than the slug.
   ('cabins-usa', 'Cabins USA', 'https://www.cabinsusa.com',
    'generic-jsonld', 'jsonld', false, true, 1000,
-   '{"listingUrl": "-cabin-rental-(\\d+)\\.php$"}'::jsonb),
+   '{"listingUrl": "-(\\d+)\\.php$"}'::jsonb),
 
-  -- Sitemaps confirmed to exist; listing URL patterns still need confirming.
+  -- ~159 cabins, 4/4 sampled pages verified.
   ('hearthside', 'Hearthside Cabin Rentals', 'https://www.hearthsidecabinrentals.com',
-   'generic-jsonld', 'jsonld', false, false, 1000,
-   '{"listingUrl": "/cabin[s]?/([a-z0-9-]+)/?$"}'::jsonb),
+   'generic-jsonld', 'jsonld', false, true, 1000,
+   '{"listingUrl": "^/cabins/([a-z0-9-]+)/?$",
+     "excludeUrl": "/(booking|confirmation|by-name|by-area|search|specials|reservations|thank-you)/?$"}'::jsonb),
 
+  -- ~222 cabins. Singular /cabin-rental/ is the listing path; the plural
+  -- /cabin-rentals/ is their category index.
   ('timber-tops', 'Timber Tops Cabin Rentals', 'https://www.yourcabin.com',
-   'generic-jsonld', 'jsonld', false, false, 1000,
-   '{"listingUrl": "/cabin[s]?/([a-z0-9-]+)/?$"}'::jsonb),
+   'generic-jsonld', 'jsonld', false, true, 1000,
+   '{"listingUrl": "^/cabin-rental/([a-z0-9-]+)/?$",
+     "excludeUrl": "/(booking|confirmation|by-name|by-area|search|specials|reservations|thank-you)/?$"}'::jsonb),
 
+  -- ~117 cabins.
   ('summit', 'Summit Cabin Rentals', 'https://www.summitcabinrentals.com',
-   'generic-jsonld', 'jsonld', false, false, 1000,
-   '{"listingUrl": "/cabin[s]?/([a-z0-9-]+)/?$"}'::jsonb),
-
-  ('volunteer', 'Volunteer Cabin Rentals', 'https://www.volunteercabinrentals.com',
-   'generic-jsonld', 'jsonld', false, false, 1000,
-   '{"listingUrl": "/cabin[s]?/([a-z0-9-]+)/?$"}'::jsonb),
+   'generic-jsonld', 'jsonld', false, true, 1000,
+   '{"listingUrl": "^/cabins/([a-z0-9-]+)/?$",
+     "excludeUrl": "/(booking|confirmation|by-name|by-area|search|specials|reservations|thank-you)/?$"}'::jsonb),
 
   -- Adapter stubs: PMS-backed, endpoints not yet reverse-engineered.
   ('cabins-of-the-smokies', 'Cabins of the Smoky Mountains', 'https://www.cabinsofthesmokymountains.com',
