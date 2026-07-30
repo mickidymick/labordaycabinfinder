@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "Labor Day Cabin Finder",
+    "slug": "labor-day-cabin-finder",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#f7f9f8"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "bundler": "metro"
+    },
+    "scheme": "cabinfinder",
+    "plugins": [
+      "expo-router",
+      "expo-web-browser"
+    ]
+  }
+}
