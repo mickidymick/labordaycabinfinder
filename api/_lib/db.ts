@@ -6,6 +6,7 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import type { CompanyRow, DayAvailability, RawListing, TripWindow } from '../../scrapers/types';
 import { addDays, nightsOf } from '../../scrapers/calendar';
 import { resolveDriveMinutes } from '../../lib/geo';
+import { normalizeSupabaseUrl } from '../../lib/supabaseUrl';
 
 /**
  * How much calendar to keep around the trip. Sources hand us up to two years of
@@ -25,7 +26,9 @@ export function db(): SupabaseClient {
   if (!url) throw new Error('SUPABASE_URL is not set');
   if (!key) throw new Error('SUPABASE_SERVICE_ROLE_KEY is not set');
 
-  client = createClient(url, key, { auth: { persistSession: false } });
+  // Same trap as the client: a URL copied from the "RESTful endpoint" field
+  // would make every request land on /rest/v1/rest/v1/...
+  client = createClient(normalizeSupabaseUrl(url), key, { auth: { persistSession: false } });
   return client;
 }
 
