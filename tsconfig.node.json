@@ -11,7 +11,12 @@
     "resolveJsonModule": true,
     "types": ["node"],
     "allowImportingTsExtensions": true,
-    "verbatimModuleSyntax": false
+    "verbatimModuleSyntax": false,
+    // The Vercel Node runtime strips types rather than compiling, so anything
+    // that needs real emit — parameter properties, enums, namespaces — blows up
+    // at module load with an opaque FUNCTION_INVOCATION_FAILED. This makes tsc
+    // reject that syntax up front instead.
+    "erasableSyntaxOnly": true
   },
   "include": ["api/**/*.ts", "scrapers/**/*.ts", "scripts/**/*.ts"]
 }

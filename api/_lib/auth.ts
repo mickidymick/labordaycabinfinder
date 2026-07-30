@@ -40,10 +40,19 @@ export function requireSecret(req: VercelRequest): void {
   if (provided !== expected) throw new HttpError(401, 'Bad or missing secret');
 }
 
+/**
+ * Note the explicit field + assignment rather than a `public status` parameter
+ * property. Parameter properties are TypeScript-only syntax that needs a real
+ * compile step; the Vercel Node runtime only strips types, so that form throws
+ * at module load and the function 500s before any handler code runs.
+ */
 export class HttpError extends Error {
-  constructor(public status: number, message: string) {
+  status: number;
+
+  constructor(status: number, message: string) {
     super(message);
     this.name = 'HttpError';
+    this.status = status;
   }
 }
 

@@ -41,5 +41,3 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     sendError(res, e);
   }
 }
-
-export const config = { maxDuration: 60 };
