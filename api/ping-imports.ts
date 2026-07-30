@@ -3,11 +3,11 @@
 // constants/) and the .ts import extensions. If ping.ts works and this doesn't,
 // the problem is module resolution/bundling, not the runtime.
 
-import { HttpError } from './_lib/auth.ts';
-import { windowFor } from './_lib/db.ts';
-import { getAdapter } from '../scrapers/registry.ts';
-import { isStayAvailable } from '../scrapers/calendar.ts';
-import { resolveDriveMinutes } from '../lib/geo.ts';
+import { HttpError } from './_lib/auth';
+import { windowFor } from './_lib/db';
+import { getAdapter } from '../scrapers/registry';
+import { isStayAvailable } from '../scrapers/calendar';
+import { resolveDriveMinutes } from '../lib/geo';
 
 export default function handler(req: any, res: any) {
   res.status(200).json({

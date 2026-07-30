@@ -1,5 +1,5 @@
 import type { VercelRequest } from '@vercel/node';
-import { db } from './db.ts';
+import { db } from './db';
 
 /**
  * Resolve the caller from their Supabase access token and confirm they're a

@@ -2,10 +2,10 @@
 // Adding a source is either a new entry here, or — for anything that publishes
 // schema.org data — just a `companies` row pointing at 'generic-jsonld'.
 
-import type { SourceAdapter } from './types.ts';
-import { elkSprings } from './adapters/elk-springs.ts';
-import { genericJsonLd } from './adapters/generic-jsonld.ts';
-import { apifyAirbnb, apifyVrbo } from './adapters/apify.ts';
+import type { SourceAdapter } from './types';
+import { elkSprings } from './adapters/elk-springs';
+import { genericJsonLd } from './adapters/generic-jsonld';
+import { apifyAirbnb, apifyVrbo } from './adapters/apify';
 
 /**
  * Sources we know exist but haven't reverse-engineered yet. They fail loudly

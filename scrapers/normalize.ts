@@ -1,6 +1,6 @@
 // Turning whatever each site says into the shared vocabulary in constants/cabins.ts.
 
-import { AMENITY_PATTERNS, TOWNS } from '../constants/cabins.ts';
+import { AMENITY_PATTERNS, TOWNS } from '../constants/cabins';
 
 /**
  * Extract canonical amenity keys from free text. Most of these sites cram their

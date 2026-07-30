@@ -8,8 +8,8 @@
 // no single function has to fit every company into 60 seconds.
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { requireSecret, selfBaseUrl, sendError } from '../_lib/auth.ts';
-import { getCompanies } from '../_lib/db.ts';
+import { requireSecret, selfBaseUrl, sendError } from '../_lib/auth';
+import { getCompanies } from '../_lib/db';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {

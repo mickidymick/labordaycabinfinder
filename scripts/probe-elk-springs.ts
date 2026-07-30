@@ -6,10 +6,10 @@
 // Asserts the catalog is a plausible size, that fields are actually populated,
 // and that a real calendar decodes correctly across the trip window.
 
-import { elkSprings } from '../scrapers/adapters/elk-springs.ts';
-import { makeFetchers } from '../scrapers/http.ts';
-import { isStayAvailable, nightsOf } from '../scrapers/calendar.ts';
-import type { AdapterContext, CompanyRow } from '../scrapers/types.ts';
+import { elkSprings } from '../scrapers/adapters/elk-springs';
+import { makeFetchers } from '../scrapers/http';
+import { isStayAvailable, nightsOf } from '../scrapers/calendar';
+import type { AdapterContext, CompanyRow } from '../scrapers/types';
 
 const CHECK_IN = process.env.CHECK_IN ?? '2026-09-04';
 const CHECK_OUT = process.env.CHECK_OUT ?? '2026-09-07';

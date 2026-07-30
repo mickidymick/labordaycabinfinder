@@ -6,8 +6,8 @@
 // as they land. So the button responds immediately and the grid fills in.
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { HttpError, requireMember, selfBaseUrl, sendError } from './_lib/auth.ts';
-import { db, getCompanies, getTripConfig } from './_lib/db.ts';
+import { HttpError, requireMember, selfBaseUrl, sendError } from './_lib/auth';
+import { db, getCompanies, getTripConfig } from './_lib/db';
 
 /**
  * How long to give the fan-out requests to be accepted before returning. Once

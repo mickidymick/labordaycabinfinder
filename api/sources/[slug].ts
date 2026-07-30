@@ -5,9 +5,9 @@
 // own invocation and therefore its own time budget.
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { HttpError, requireSecret, sendError } from '../_lib/auth.ts';
-import { finishRunIfDone, getCompanies, getTripConfig, markSource } from '../_lib/db.ts';
-import { runSource, SourceSkipped } from '../_lib/runSource.ts';
+import { HttpError, requireSecret, sendError } from '../_lib/auth';
+import { finishRunIfDone, getCompanies, getTripConfig, markSource } from '../_lib/db';
+import { runSource, SourceSkipped } from '../_lib/runSource';
 
 /** Leave headroom inside the 60s function limit to write results and finish up. */
 const WORK_BUDGET_MS = 50_000;

@@ -3,12 +3,12 @@
 // and the nightly warm cron, which differ only in how much time they're given
 // and which listings they prioritize.
 
-import { getAdapter } from '../../scrapers/registry.ts';
-import { makeFetchers } from '../../scrapers/http.ts';
-import { MissingApifyTokenError } from '../../scrapers/adapters/apify.ts';
-import { isStayAvailable } from '../../scrapers/calendar.ts';
-import type { AdapterContext, CompanyRow, DayAvailability, RawListing, TripWindow } from '../../scrapers/types.ts';
-import { db, markSource, upsertAvailability, upsertListings } from './db.ts';
+import { getAdapter } from '../../scrapers/registry';
+import { makeFetchers } from '../../scrapers/http';
+import { MissingApifyTokenError } from '../../scrapers/adapters/apify';
+import { isStayAvailable } from '../../scrapers/calendar';
+import type { AdapterContext, CompanyRow, DayAvailability, RawListing, TripWindow } from '../../scrapers/types';
+import { db, markSource, upsertAvailability, upsertListings } from './db';
 
 export type RunOptions = {
   company: CompanyRow;

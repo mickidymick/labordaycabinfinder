@@ -3,9 +3,9 @@
 // module is only ever imported from api/.
 
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import type { CompanyRow, DayAvailability, RawListing, TripWindow } from '../../scrapers/types.ts';
-import { addDays, nightsOf } from '../../scrapers/calendar.ts';
-import { resolveDriveMinutes } from '../../lib/geo.ts';
+import type { CompanyRow, DayAvailability, RawListing, TripWindow } from '../../scrapers/types';
+import { addDays, nightsOf } from '../../scrapers/calendar';
+import { resolveDriveMinutes } from '../../lib/geo';
 
 /**
  * How much calendar to keep around the trip. Sources hand us up to two years of

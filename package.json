@@ -7,8 +7,8 @@
     "web": "expo start --web",
     "build": "expo export --platform web",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.node.json",
-    "test": "node --test --experimental-strip-types scrapers/*.test.ts",
-    "probe:elk": "npx tsx scripts/probe-elk-springs.ts"
+    "test": "tsx --test scrapers/*.test.ts",
+    "probe:elk": "tsx scripts/probe-elk-springs.ts"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.1.1",

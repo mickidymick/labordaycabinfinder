@@ -15,9 +15,9 @@
 // There is no server-side date filter — their Svelte widget filters map_cabins
 // client-side — which is why availability costs one request per cabin.
 
-import type { AdapterContext, DayAvailability, RawListing, SourceAdapter } from '../types.ts';
-import { outOfTime } from '../types.ts';
-import { decodeCalendarString } from '../calendar.ts';
+import type { AdapterContext, DayAvailability, RawListing, SourceAdapter } from '../types';
+import { outOfTime } from '../types';
+import { decodeCalendarString } from '../calendar';
 import {
   absoluteUrl,
   extractAmenities,
@@ -26,7 +26,7 @@ import {
   parseInteger,
   parseMoney,
   stripHtml,
-} from '../normalize.ts';
+} from '../normalize';
 
 type ElkCabin = {
   cabin_id: number;

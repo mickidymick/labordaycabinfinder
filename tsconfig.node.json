@@ -10,7 +10,11 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "types": ["node"],
-    "allowImportingTsExtensions": true,
+    // Relative imports are extensionless. Writing them as './foo.ts' is valid
+    // for tsc and for Node's native type stripping, but the Vercel Node runtime
+    // fails to resolve those specifiers and the function 500s at module load.
+    // Extensionless is what actually works everywhere; `tsx` runs the tests and
+    // probe scripts locally since bare Node ESM demands explicit extensions.
     "verbatimModuleSyntax": false,
     // The Vercel Node runtime strips types rather than compiling, so anything
     // that needs real emit — parameter properties, enums, namespaces — blows up

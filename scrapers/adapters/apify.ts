@@ -13,10 +13,10 @@
 // actor on every button press. If APIFY_TOKEN is unset the source reports
 // `skipped` instead of failing the whole search.
 
-import type { AdapterContext, RawListing, SourceAdapter } from '../types.ts';
-import { nightsOf } from '../calendar.ts';
-import { extractAmenities, normalizeTownName, parseDecimal, parseInteger, parseMoney, stripHtml } from '../normalize.ts';
-import { resolveDriveMinutes } from '../../lib/geo.ts';
+import type { AdapterContext, RawListing, SourceAdapter } from '../types';
+import { nightsOf } from '../calendar';
+import { extractAmenities, normalizeTownName, parseDecimal, parseInteger, parseMoney, stripHtml } from '../normalize';
+import { resolveDriveMinutes } from '../../lib/geo';
 
 const APIFY_BASE = 'https://api.apify.com/v2';
 const DEFAULT_MAX_ITEMS = 60;

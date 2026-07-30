@@ -4,7 +4,7 @@
 // Regex extraction keeps this dependency-free; we only ever read <script> blocks
 // whose type is application/ld+json, so there's no HTML parsing to get wrong.
 
-import type { RawListing } from './types.ts';
+import type { RawListing } from './types';
 import {
   absoluteUrl,
   extractAmenities,
@@ -13,7 +13,7 @@ import {
   parseInteger,
   parseMoney,
   stripHtml,
-} from './normalize.ts';
+} from './normalize';
 
 const LD_BLOCK = /<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
 

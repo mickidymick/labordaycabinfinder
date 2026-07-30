@@ -9,7 +9,7 @@
 //
 // A bookable window reads as I A A A O — arrive on the I, depart on the O.
 
-import type { DayAvailability, DayState } from './types.ts';
+import type { DayAvailability, DayState } from './types';
 
 const VALID: Record<string, DayState> = { A: 'A', U: 'U', I: 'I', O: 'O' };
 

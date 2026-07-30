@@ -15,15 +15,15 @@
 // These sources are catalog-only: none of them expose a dated availability API,
 // so `supports_availability` is false and the UI shows "check their site".
 
-import type { AdapterContext, RawListing, SourceAdapter } from '../types.ts';
-import { outOfTime } from '../types.ts';
+import type { AdapterContext, RawListing, SourceAdapter } from '../types';
+import { outOfTime } from '../types';
 import {
   isSitemapIndex,
   listingFromPage,
   listingsFromItemList,
   urlsFromSitemap,
-} from '../jsonld.ts';
-import { resolveDriveMinutes } from '../../lib/geo.ts';
+} from '../jsonld';
+import { resolveDriveMinutes } from '../../lib/geo';
 
 type GenericConfig = {
   sitemap?: string;

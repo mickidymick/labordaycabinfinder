@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-import type { DayAvailability } from './types.ts';
+import type { DayAvailability } from './types';
 import {
   addDays,
   daysBetween,
@@ -10,7 +10,7 @@ import {
   isStayAvailable,
   nightsOf,
   stayTotal,
-} from './calendar.ts';
+} from './calendar';
 
 // Captured verbatim from https://www.elkspringsresort.com/wp-json/elk/v1/cabins/284
 // ("Blueberry Hill") on 2026-07-30. Their own `earliest_stay` field reported
